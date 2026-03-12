@@ -5,6 +5,11 @@ const { initDB } = require('./db');
 const urlRoutes = require('./routes/url');
 
 app.use(express.json());
+
+app.get('/', (req, res) => {
+  res.json({ message: 'URL Shortener API is running!', endpoints: { shorten: 'POST /shorten', redirect: 'GET /:code' } });
+});
+
 app.use('/', urlRoutes);
 
 const PORT = process.env.PORT || 3000;
