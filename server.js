@@ -14,3 +14,10 @@ initDB().then(() => {
         console.log(`Server running on port ${PORT}`);
     });
 });
+
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: true, // Equivalent to verify-full
+  }
+});
