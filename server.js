@@ -1,14 +1,13 @@
 const express = require('express');
 const app = express();
+const cors = require('cors');
 require('dotenv').config();
 const { initDB } = require('./db');
 const urlRoutes = require('./routes/url');
 
+app.use(cors());
 app.use(express.json());
-
-app.get('/', (req, res) => {
-  res.json({ message: 'URL Shortener API is running!', endpoints: { shorten: 'POST /shorten', redirect: 'GET /:code' } });
-});
+app.use(express.static('public'));
 
 app.use('/', urlRoutes);
 
