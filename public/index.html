@@ -4,428 +4,65 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>URL Shortener</title>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet"/>
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    :root {
-      --bg: #f7f6f3;
-      --surface: #ffffff;
-      --border: #e2e0d8;
-      --border-strong: #c8c5bb;
-      --text: #1a1916;
-      --muted: #6b6860;
-      --hint: #a09d96;
-      --accent: #1a1916;
-      --accent-fg: #f7f6f3;
-      --success-bg: #eaf3de;
-      --success-text: #3b6d11;
-      --error-bg: #fcebeb;
-      --error-text: #a32d2d;
-      --mono: 'JetBrains Mono', monospace;
-      --sans: 'DM Sans', sans-serif;
-      --radius: 10px;
-      --radius-lg: 14px;
-    }
-
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: var(--sans);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
-
-    header {
-      padding: 1.5rem 2rem;
-      border-bottom: 0.5px solid var(--border);
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .logo-mark {
-      width: 28px;
-      height: 28px;
-      background: var(--accent);
-      border-radius: 7px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .logo-mark svg { display: block; }
-
-    .logo-text {
-      font-family: var(--mono);
-      font-size: 14px;
-      font-weight: 500;
-      color: var(--text);
-    }
-
-    main {
-      flex: 1;
-      display: flex;
-      align-items: flex-start;
-      justify-content: center;
-      padding: 4rem 1.5rem 2rem;
-    }
-
-    .container { width: 100%; max-width: 580px; }
-
-    .hero { margin-bottom: 2.5rem; }
-
-    .hero h1 {
-      font-size: 32px;
-      font-weight: 500;
-      letter-spacing: -0.02em;
-      line-height: 1.2;
-      margin-bottom: 0.5rem;
-    }
-
-    .hero p {
-      font-size: 15px;
-      color: var(--muted);
-      line-height: 1.6;
-    }
-
-    .card {
-      background: var(--surface);
-      border: 0.5px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 1.5rem;
-      margin-bottom: 1rem;
-    }
-
-    .input-group {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .input-wrap {
-      position: relative;
-      display: flex;
-      align-items: center;
-    }
-
-    .input-wrap svg {
-      position: absolute;
-      left: 13px;
-      color: var(--hint);
-      flex-shrink: 0;
-    }
-
-    input[type="text"] {
-      width: 100%;
-      height: 44px;
-      padding: 0 14px 0 40px;
-      font-family: var(--mono);
-      font-size: 13px;
-      background: var(--bg);
-      border: 0.5px solid var(--border);
-      border-radius: var(--radius);
-      color: var(--text);
-      outline: none;
-      transition: border-color 0.15s;
-    }
-
-    input[type="text"]:focus { border-color: var(--border-strong); }
-    input[type="text"]::placeholder { color: var(--hint); }
-
-    button.primary {
-      width: 100%;
-      height: 44px;
-      background: var(--accent);
-      color: var(--accent-fg);
-      border: none;
-      border-radius: var(--radius);
-      font-family: var(--mono);
-      font-size: 13px;
-      font-weight: 500;
-      cursor: pointer;
-      letter-spacing: 0.02em;
-      transition: opacity 0.15s, transform 0.1s;
-    }
-
-    button.primary:hover { opacity: 0.88; }
-    button.primary:active { transform: scale(0.99); }
-    button.primary:disabled { opacity: 0.35; cursor: not-allowed; transform: none; }
-
-    .result {
-      display: none;
-      background: var(--success-bg);
-      border: 0.5px solid #c0dd97;
-      border-radius: var(--radius-lg);
-      padding: 1.25rem 1.5rem;
-      margin-bottom: 1rem;
-    }
-
-    .result-label {
-      font-family: var(--mono);
-      font-size: 10px;
-      letter-spacing: 0.08em;
-      color: var(--success-text);
-      margin-bottom: 10px;
-    }
-
-    .result-row {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .short-url {
-      font-family: var(--mono);
-      font-size: 15px;
-      font-weight: 500;
-      color: var(--success-text);
-      flex: 1;
-      word-break: break-all;
-    }
-
-    .copy-btn {
-      height: 32px;
-      padding: 0 12px;
-      background: white;
-      border: 0.5px solid #c0dd97;
-      border-radius: var(--radius);
-      font-family: var(--mono);
-      font-size: 12px;
-      color: var(--success-text);
-      cursor: pointer;
-      white-space: nowrap;
-      transition: background 0.15s;
-    }
-
-    .copy-btn:hover { background: #d4edae; }
-
-    .original-url {
-      font-size: 12px;
-      color: #639922;
-      margin-top: 8px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .error {
-      display: none;
-      background: var(--error-bg);
-      border: 0.5px solid #f09595;
-      border-radius: var(--radius);
-      padding: 0.75rem 1rem;
-      font-size: 13px;
-      color: var(--error-text);
-      margin-bottom: 1rem;
-    }
-
-    .history-section { display: none; }
-
-    .section-label {
-      font-family: var(--mono);
-      font-size: 10px;
-      letter-spacing: 0.08em;
-      color: var(--hint);
-      margin-bottom: 10px;
-    }
-
-    .history-list {
-      background: var(--surface);
-      border: 0.5px solid var(--border);
-      border-radius: var(--radius-lg);
-      overflow: hidden;
-    }
-
-    .history-item {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 10px 14px;
-      border-bottom: 0.5px solid var(--border);
-    }
-
-    .history-item:last-child { border-bottom: none; }
-
-    .h-short {
-      font-family: var(--mono);
-      font-size: 12px;
-      font-weight: 500;
-      color: var(--text);
-      min-width: 200px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .h-orig {
-      font-size: 12px;
-      color: var(--muted);
-      flex: 1;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .h-copy {
-      font-family: var(--mono);
-      font-size: 11px;
-      padding: 3px 8px;
-      background: transparent;
-      border: 0.5px solid var(--border);
-      border-radius: 6px;
-      color: var(--muted);
-      cursor: pointer;
-      white-space: nowrap;
-    }
-
-    .h-copy:hover { background: var(--bg); }
-
-    footer {
-      text-align: center;
-      padding: 1.5rem;
-      font-size: 12px;
-      color: var(--hint);
-      font-family: var(--mono);
-    }
-
-    @media (max-width: 480px) {
-      .hero h1 { font-size: 24px; }
-      .h-short { min-width: 140px; }
-    }
+    body { font-family: sans-serif; max-width: 500px; margin: 80px auto; padding: 0 20px; }
+    h1 { font-size: 22px; margin-bottom: 8px; }
+    p { color: #666; margin-bottom: 24px; }
+    input { width: 100%; padding: 10px; font-size: 14px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; }
+    button { margin-top: 10px; width: 100%; padding: 10px; background: #111; color: #fff; border: none; border-radius: 6px; font-size: 14px; cursor: pointer; }
+    button:hover { background: #333; }
+    #result { margin-top: 20px; padding: 14px; background: #f0fdf4; border: 1px solid #86efac; border-radius: 6px; display: none; }
+    #result a { font-weight: bold; color: #166534; word-break: break-all; }
+    #error { margin-top: 12px; color: red; display: none; font-size: 14px; }
   </style>
 </head>
 <body>
 
-<header>
-  <div class="logo-mark">
-    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-      <path d="M2 7h10M7 2l5 5-5 5" stroke="#f7f6f3" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-    </svg>
+  <h1>URL Shortener</h1>
+  <p>Paste a long URL to get a short link.</p>
+
+  <input type="text" id="urlInput" placeholder="https://example.com/long/url" />
+  <button onclick="shorten()">Shorten</button>
+
+  <div id="result">
+    Short URL: <a id="shortUrl" href="#" target="_blank"></a>
   </div>
-  <span class="logo-text">url-shortener</span>
-</header>
+  <div id="error"></div>
 
-<main>
-  <div class="container">
+  <script>
+    const API = 'https://url-shortener-bn1s.onrender.com';
 
-    <div class="hero">
-      <h1>Shorten any URL,<br/>instantly.</h1>
-      <p>Paste a long link below and get a short, shareable URL in one click.</p>
-    </div>
+    async function shorten() {
+      const url = document.getElementById('urlInput').value.trim();
+      document.getElementById('error').style.display = 'none';
+      document.getElementById('result').style.display = 'none';
 
-    <div class="result" id="result">
-      <div class="result-label">YOUR SHORT LINK</div>
-      <div class="result-row">
-        <span class="short-url" id="shortUrl"></span>
-        <button class="copy-btn" id="copyBtn" onclick="copyResult()">Copy</button>
-      </div>
-      <div class="original-url" id="origUrl"></div>
-    </div>
+      if (!url) return;
 
-    <div class="error" id="error"></div>
+      try {
+        const res = await fetch(`${API}/shorten`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ original_url: url })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Something went wrong');
 
-    <div class="card">
-      <div class="input-group">
-        <div class="input-wrap">
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-            <path d="M6.5 9.5l3-3M5.5 6.5L4 8a3.536 3.536 0 005 5l1.5-1.5M10.5 9.5L12 8a3.536 3.536 0 00-5-5L5.5 4.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
-          </svg>
-          <input type="text" id="urlInput" placeholder="https://example.com/very/long/url/here" />
-        </div>
-        <button class="primary" id="shortenBtn" onclick="shorten()">Shorten URL</button>
-      </div>
-    </div>
+        const shortUrl = data.short_url;
 
-    <div class="history-section" id="historySection">
-      <div class="section-label">RECENT LINKS</div>
-      <div class="history-list" id="historyList"></div>
-    </div>
-
-  </div>
-</main>
-
-<footer>built with node.js · express · postgresql · redis</footer>
-
-<script>
-  const API = 'https://url-shortener-bn1s.onrender.com';
-  const history = [];
-
-  async function shorten() {
-    const input = document.getElementById('urlInput');
-    const btn = document.getElementById('shortenBtn');
-    const errorEl = document.getElementById('error');
-    const url = input.value.trim();
-
-    if (!url) return;
-
-    errorEl.style.display = 'none';
-    document.getElementById('result').style.display = 'none';
-    btn.disabled = true;
-    btn.textContent = 'Shortening...';
-
-    try {
-      const res = await fetch(`${API}/shorten`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url })
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Something went wrong');
-
-      const shortCode = data.shortCode || data.code || data.short_code || data.id;
-      const shortUrl = `${API}/${shortCode}`;
-
-      document.getElementById('shortUrl').textContent = shortUrl;
-      document.getElementById('origUrl').textContent = url;
-      document.getElementById('result').style.display = 'block';
-      document.getElementById('copyBtn').textContent = 'Copy';
-
-      history.unshift({ short: shortUrl, original: url });
-      renderHistory();
-      input.value = '';
-    } catch (err) {
-      errorEl.textContent = err.message;
-      errorEl.style.display = 'block';
-    } finally {
-      btn.disabled = false;
-      btn.textContent = 'Shorten URL';
+        document.getElementById('shortUrl').textContent = shortUrl;
+        document.getElementById('shortUrl').href = shortUrl;
+        document.getElementById('result').style.display = 'block';
+      } catch (err) {
+        document.getElementById('error').textContent = err.message;
+        document.getElementById('error').style.display = 'block';
+      }
     }
-  }
 
-  function copyResult() {
-    const url = document.getElementById('shortUrl').textContent;
-    navigator.clipboard.writeText(url).then(() => {
-      const btn = document.getElementById('copyBtn');
-      btn.textContent = 'Copied!';
-      setTimeout(() => btn.textContent = 'Copy', 2000);
+    document.getElementById('urlInput').addEventListener('keydown', e => {
+      if (e.key === 'Enter') shorten();
     });
-  }
-
-  function copyItem(url, btn) {
-    navigator.clipboard.writeText(url).then(() => {
-      btn.textContent = 'Copied!';
-      setTimeout(() => btn.textContent = 'Copy', 2000);
-    });
-  }
-
-  function renderHistory() {
-    if (history.length === 0) return;
-    document.getElementById('historySection').style.display = 'block';
-    document.getElementById('historyList').innerHTML = history.slice(0, 6).map((h, i) =>
-      `<div class="history-item">
-        <span class="h-short">${h.short}</span>
-        <span class="h-orig">${h.original}</span>
-        <button class="h-copy" onclick="copyItem('${h.short}', this)">Copy</button>
-      </div>`
-    ).join('');
-  }
-
-  document.getElementById('urlInput').addEventListener('keydown', e => {
-    if (e.key === 'Enter') shorten();
-  });
-</script>
+  </script>
 
 </body>
 </html>
